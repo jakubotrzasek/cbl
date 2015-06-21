@@ -9,6 +9,10 @@ public class BeaconData {
     public double temp = 0.0;
     public int jumps = 0;
     public String proximity = "";
+    public double xacc = 0.0;
+    public double yacc = 0.0;
+    public double zacc = 0.0;
+    public int bpower = 0;
 
     public String toString() {
         return new StringBuilder().append("name:").append(this.name).
@@ -16,6 +20,25 @@ public class BeaconData {
                 append(",jumps:").append(this.jumps).
                 append(",temp:").append(this.temp).
                 append(",proximity:").append(this.proximity).
+                append(",x_acceleration:").append(this.xacc).
+                append(",y_acceleration:").append(this.yacc).
+                append(",z_acceleration:").append(this.zacc).
+                append(",broadc.power:").append(this.bpower).
+                toString();
+    }
+
+    public String toCSV() {
+
+        return new StringBuilder().append(this.name).append(";").
+                append(this.distance).append(";").
+                append(this.jumps).append(";").
+                append(this.temp).append(";").
+                append(this.proximity).append(";").
+                append(this.xacc).append(";").
+                append(this.yacc).append(";").
+                append(this.zacc).append(";").
+                append(this.bpower).append(";").
+                append(";\r\n").
                 toString();
     }
 

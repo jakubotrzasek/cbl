@@ -3,8 +3,6 @@ package pl.jakubotrzasek.cowbehaviorlistener;
 
 import com.estimote.sdk.Nearable;
 import com.estimote.sdk.Utils;
-import com.estimote.sdk.cloud.model.BroadcastingPower;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +27,16 @@ public class NearableHandler {
         List<BeaconData> ld= new ArrayList<BeaconData>();
         for(Nearable n : nearables) {
             BeaconData bdt = new BeaconData();
-            bdt.distance =   (double) n.power.powerInDbm;
+            bdt.distance = (double) n.rssi;
             bdt.jumps = n.isMoving ? 1:0;
-           // bdt.distance =  Math.min(Utils. , 6.0);
-            bdt.name = n.identifier;
+            bdt.bpower = n.power.powerInDbm;
+            bdt.name = new StringBuilder().append(n.identifier).toString();
             bdt.temp = n.temperature;
             bdt.proximity = Utils.computeProximity(n).name();
+            bdt.xacc = n.xAcceleration;
+            bdt.yacc = n.yAcceleration;
+            bdt.zacc = n.zAcceleration;
+
             ld.add(bdt);
         }
         return ld;
