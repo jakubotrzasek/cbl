@@ -36,7 +36,7 @@ public class NearableHandler {
             bdt.xacc = n.xAcceleration;
             bdt.yacc = n.yAcceleration;
             bdt.zacc = n.zAcceleration;
-
+            bdt.stateDuration = n.currentMotionStateDuration;
             ld.add(bdt);
         }
         return ld;

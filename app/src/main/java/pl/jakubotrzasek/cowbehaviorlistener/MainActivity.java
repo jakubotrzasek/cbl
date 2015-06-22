@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Nearable;
@@ -53,9 +52,13 @@ public class MainActivity extends ActionBarActivity {
                 NearableHandler nh = new NearableHandler(nearables);
                 List<BeaconData> bdatas =  nh.getBeaconsDistance();
                 t.setText("");
+
                 if (bdatas != null && bdatas.toArray().length >0) {
                     for (BeaconData b : bdatas) {
                        t.append(new StringBuilder().append(":").append(b.toString()));
+                        storageHandler sh = new storageHandler();
+                        sh.createFolder("cblData");
+                        sh.appendToFile("cblData", "cbl_nearableData.csv", b.toCSV());
                     }
                 }
                 Log.d(TAG, "Discovered nearables: " + nearables);
@@ -121,4 +124,6 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
