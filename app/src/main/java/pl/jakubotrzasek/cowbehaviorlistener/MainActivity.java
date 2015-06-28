@@ -1,8 +1,5 @@
 package pl.jakubotrzasek.cowbehaviorlistener;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +11,8 @@ import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Nearable;
 import com.estimote.sdk.Region;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -33,9 +32,35 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         t=new TextView(this);
-        beaconManager =new BeaconManager(this);
-        t=(TextView)findViewById(R.id.textView01);
+        t = (TextView) findViewById(R.id.textView02);
+        if (beaconManager == null) {
+            beaconManager = new BeaconManager(this);
+            beaconManager.setNearableListener(new BeaconManager.NearableListener() {
+                @Override
+                public void onNearablesDiscovered(List<Nearable> nearables) {
+                    NearableHandler nh = new NearableHandler(nearables);
+                    List<BeaconData> bdatas = nh.getBeaconsDistance();
+                    t.setText("");
+
+                    if (bdatas != null && bdatas.toArray().length > 0) {
+                        for (BeaconData b : bdatas) {
+                            t.append(new StringBuilder().append(":").append(b.toString()));
+                            storageHandler sh = new storageHandler();
+                            sh.createFolder("cblData");
+
+                            // sh.appendToFile("cblData", "cbl_nearableData.csv",new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
+                            sh.appendToFile("cblData", new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
+                        }
+                    }
+                    Log.d(TAG, "Discovered nearables: " + nearables);
+
+                }
+            });
+        }
+
+       /*
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
                 BeaconHandler bh = new BeaconHandler(beacons);
@@ -46,25 +71,8 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Ranged beacons: " + beacons);
                            }
         });
+*/
 
-        beaconManager.setNearableListener(new BeaconManager.NearableListener() {
-            @Override public void onNearablesDiscovered(List<Nearable> nearables) {
-                NearableHandler nh = new NearableHandler(nearables);
-                List<BeaconData> bdatas =  nh.getBeaconsDistance();
-                t.setText("");
-
-                if (bdatas != null && bdatas.toArray().length >0) {
-                    for (BeaconData b : bdatas) {
-                       t.append(new StringBuilder().append(":").append(b.toString()));
-                        storageHandler sh = new storageHandler();
-                        sh.createFolder("cblData");
-                        sh.appendToFile("cblData", "cbl_nearableData.csv", b.toCSV());
-                    }
-                }
-                Log.d(TAG, "Discovered nearables: " + nearables);
-                
-            }
-        });
     }
 
     @Override
@@ -99,6 +107,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         beaconManager.disconnect();
     }
 

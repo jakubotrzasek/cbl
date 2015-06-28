@@ -4,7 +4,7 @@ package pl.jakubotrzasek.cowbehaviorlistener;
  * Created by jakubotrzasek on 23.05.15.
  */
 public class BeaconData {
-    public Double distance=0.0;
+    public Double distance = 0.0;
     public String name = "";
     public double temp = 0.0;
     public int jumps = 0;
@@ -41,7 +41,6 @@ public class BeaconData {
                 append(this.zacc).append(";").
                 append(this.stateDuration).append(";").
                 append(this.bpower).append(";").
-                append(";\r\n").
                 toString();
     }
 
