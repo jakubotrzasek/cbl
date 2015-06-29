@@ -1,12 +1,15 @@
 package pl.jakubotrzasek.cowbehaviorlistener;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import com.estimote.sdk.Beacon;
+
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Nearable;
 import com.estimote.sdk.Region;
@@ -21,69 +24,92 @@ public class MainActivity extends ActionBarActivity {
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
     private static final String TAG = "MyActivity";
-
-   // protected Context context;
     private TextView t;
-    private String scanId ="";
-    private BeaconManager beaconManager; // = new BeaconManager(this);
-
+    private String scanId = "";
+    private BeaconManager beaconManager;
+    private Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        t=new TextView(this);
-        t = (TextView) findViewById(R.id.textView02);
+        i = new Intent(getApplicationContext(), FeedActivity.class);
+        t = new TextView(this);
         if (beaconManager == null) {
             beaconManager = new BeaconManager(this);
-            beaconManager.setNearableListener(new BeaconManager.NearableListener() {
-                @Override
-                public void onNearablesDiscovered(List<Nearable> nearables) {
-                    NearableHandler nh = new NearableHandler(nearables);
-                    List<BeaconData> bdatas = nh.getBeaconsDistance();
-                    t.setText("");
+        }
+        t = (TextView) findViewById(R.id.textView02);
+        beaconManager.setNearableListener(new BeaconManager.NearableListener() {
+            @Override
+            public void onNearablesDiscovered(List<Nearable> nearables) {
+                NearableHandler nh = new NearableHandler(nearables);
+                List<BeaconData> bdatas = nh.getBeaconsDistance();
+                t.setText("");
+                if (bdatas != null && bdatas.toArray().length > 0) {
+                    int a = 0;
+                    for (BeaconData b : bdatas) {
+                        t.append(new StringBuilder().append(":").append(b.toString()));
+                        StorageHandler sh = new StorageHandler();
+                        sh.createFolder("cblData");
+                        sh.appendToFile("cblData", new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
 
-                    if (bdatas != null && bdatas.toArray().length > 0) {
-                        for (BeaconData b : bdatas) {
-                            t.append(new StringBuilder().append(":").append(b.toString()));
-                            storageHandler sh = new storageHandler();
-                            sh.createFolder("cblData");
-
-                            // sh.appendToFile("cblData", "cbl_nearableData.csv",new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
-                            sh.appendToFile("cblData", new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
+                        if (a < 3) {
+                            i.putExtra("cow" + a, b.name);
+                            a++;
                         }
-                    }
-                    Log.d(TAG, "Discovered nearables: " + nearables);
 
+                    }
+
+                }
+                Log.d(TAG, "Discovered nearables: " + nearables);
+
+            }
+        });
+        buttonsActions();
+    }
+
+
+    private void buttonsActions() {
+        try {
+            Button button;
+            button = (Button) findViewById(R.id.feedButton);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    startActivity(i);
                 }
             });
+        } catch (Exception e) {
+            e.toString();
+            Log.e(TAG, e.toString());
         }
+    }
 
-       /*
-        beaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @Override public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
-                BeaconHandler bh = new BeaconHandler(beacons);
-                List<BeaconData> bdatas =  bh.getBeaconsDistance();
-                for(BeaconData b : bdatas ) {
-                    t.append(new StringBuilder().append(":").append(b.toString()));
-                }
-                Log.d(TAG, "Ranged beacons: " + beacons);
-                           }
-        });
-*/
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-            @Override public void onServiceReady() {
+            @Override
+            public void onServiceReady() {
                 try {
-                 //   beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+                    //   beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
                     beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-                        @Override public void onServiceReady() {
+                        @Override
+                        public void onServiceReady() {
                             scanId = beaconManager.startNearableDiscovery();
                         }
                     });
@@ -95,11 +121,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStop () {
+    protected void onStop() {
         super.onStop();
         try {
             beaconManager.stopNearableDiscovery(scanId); // .stopBeaconDiscovery(scanId);
-           // beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
+            // beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
         } catch (Exception e) {
             Log.e(TAG, "Cannot stop but it does not matter now", e);
         }
