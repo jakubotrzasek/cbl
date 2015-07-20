@@ -16,7 +16,6 @@ import java.util.Locale;
  */
 public final class StorageHandler {
     private static String TAG = "Storage_FAIL";
-    private static String empty = "";
     private static String placeHolder = "/storage/sdcard1/";
 
     public StorageHandler() {
