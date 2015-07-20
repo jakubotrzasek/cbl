@@ -1,12 +1,11 @@
 package pl.jakubotrzasek.cowbehaviorlistener;
 
-import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,12 +14,12 @@ import java.util.Locale;
 /**
  * Created by jakubotrzasek on 18.06.15.
  */
-public final class storageHandler {
+public final class StorageHandler {
 
     private static String TAG = "Storage_FAIL";
     private static String placeHolder = "/storage/sdcard1/";
 
-    public storageHandler() {
+    public StorageHandler() {
         return;
     }
 
@@ -90,5 +89,21 @@ public final class storageHandler {
             return false;
         }
 
+    }
+
+    public String getDataFromFile(String folderName, String fileName) {
+        String output = "";
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader(this.placeHolder + folderName + "/" + fileName));
+            for (String line = buf.readLine(); line != null; line = buf.readLine()) {
+                output += line + "\n";
+            }
+        } catch (Exception e) {
+            e.toString();
+            Log.e(TAG, e.toString());
+            return "false";
+        }
+
+        return output;
     }
 }
