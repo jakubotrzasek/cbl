@@ -28,11 +28,16 @@ public class MainActivity extends ActionBarActivity {
     private String scanId = "";
     private BeaconManager beaconManager;
     private Intent i;
+    private StorageHandler sh;
+    private DropBoxHandler dph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dph = new DropBoxHandler();
+        dph.runDropBox(this);
+        sh = new StorageHandler(dph);
         i = new Intent(getApplicationContext(), FeedActivity.class);
         t = new TextView(this);
         if (beaconManager == null) {
@@ -49,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
                     int a = 0;
                     for (BeaconData b : bdatas) {
                         t.append(new StringBuilder().append(":").append(b.toString()));
-                        StorageHandler sh = new StorageHandler();
+
                         sh.createFolder("cblData");
                         sh.appendToFile("cblData", new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
 
@@ -95,6 +100,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        dph.onResume();
 
     }
 

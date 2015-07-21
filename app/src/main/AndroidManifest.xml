@@ -4,6 +4,7 @@
 
     <permission android:name="android.permission.BLUETOOTH" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -26,6 +27,20 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_feed"
             android:theme="@style/FullscreenTheme"></activity>
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|keyboard">
+            <intent-filter>
+                <!-- Change this to be db- followed by your app key -->
+                <data android:scheme="db-iwu4d3qsekold0e" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

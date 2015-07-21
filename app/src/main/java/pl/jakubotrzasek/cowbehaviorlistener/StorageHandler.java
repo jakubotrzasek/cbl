@@ -1,5 +1,6 @@
 package pl.jakubotrzasek.cowbehaviorlistener;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -17,6 +18,12 @@ import java.util.Locale;
 public final class StorageHandler {
     private static String TAG = "Storage_FAIL";
     private static String placeHolder = "/storage/sdcard1/";
+    private static DropBoxHandler dropbox;
+    private boolean saveToDPFlag = true;
+
+    public StorageHandler(DropBoxHandler dph) {
+        dropbox = dph;
+    }
 
     public StorageHandler() {
         return;
@@ -61,9 +68,12 @@ public final class StorageHandler {
 
     }
 
-    public static boolean appendToFile(String folderName, String data) {
+    public boolean appendToFile(String folderName, String data) {
         String format = "yyyy-MM-dd HH";
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.UK);
+        SimpleDateFormat minutes = new SimpleDateFormat("m", Locale.UK);
+        int i_minutes = Integer.parseInt(minutes.format(new Date()));
+
         String fileName = sdf.format(new Date()) + ".csv";
         File file = new File(placeHolder + folderName, fileName);
         if (!file.exists()) {
@@ -81,6 +91,21 @@ public final class StorageHandler {
             buf.append(data);
             buf.newLine();
             buf.close();
+            if ((i_minutes % 10 == 0 || i_minutes == 0) && saveToDPFlag == true && dropbox != null) {
+
+                try {
+                    Log.e("TAG", "trying to send to dp");
+                    saveToDPFlag = false;
+                    new UploadTask().execute(placeHolder + folderName + "/" + fileName);
+
+                } catch (Exception eee) {
+                    eee.toString();
+                    Log.e("TAG", "dp failed:" + eee.toString());
+                }
+            }
+            if (i_minutes % 10 != 0 && i_minutes != 0) {
+                saveToDPFlag = true;
+            }
             return true;
         } catch (Exception ee) {
             ee.toString();
@@ -88,6 +113,32 @@ public final class StorageHandler {
             return false;
         }
 
+
+    }
+
+    private class UploadTask extends AsyncTask {
+        protected void onProgressUpdate(Integer... progress) {
+            Log.i("ASYNC", "async progress");
+        }
+
+        protected void onPostExecute(Long result) {
+            Log.i("ASYNC", "async ok");
+
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            try {
+                saveToDPFlag = false;
+                dropbox.uploadFile(params[0].toString());
+                Log.e("TAG", "sent to dp");
+            } catch (Exception e) {
+
+                Log.e("TAG", e.toString());
+                return null;
+            }
+            return null;
+        }
     }
 
     public String getDataFromFile(String folderName, String fileName) {

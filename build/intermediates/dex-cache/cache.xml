@@ -8,6 +8,11 @@
         sha1="1f0d01081292843cb801c94addbc229388b3514b">
         <dex dex="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/build/intermediates/pre-dexed/debug/estimote-sdk-preview-javadoc-aa661d01cc8b933e31f1673a907c70a634a17d05.jar" />
     </item>
+    <item jar="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/libs/json_simple-1.1.jar"
+        jumboMode="false" revision="21.1.2" sha1="5e303a03d04e6788dddfa3655272580ae0fc13bb">
+        <dex
+            dex="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/build/intermediates/pre-dexed/debug/json_simple-1.1-fa485dd456cdc102249669cfa7a55be3e24c6db0.jar" />
+    </item>
     <item
         jar="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.0.0/classes.jar"
         jumboMode="false"
@@ -21,6 +26,12 @@
         revision="21.1.2"
         sha1="578beb5046314f17acbbd48509ee4b1a21710e97">
         <dex dex="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/build/intermediates/pre-dexed/debug/classes-c071cefb54c6888e9e9b600e81941ac42a111102.jar" />
+    </item>
+    <item
+        jar="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/libs/dropbox-android-sdk-1.6.3.jar"
+        jumboMode="false" revision="21.1.2" sha1="986e7a58e925c6f91b88ae8d3224a0550b65acc7">
+        <dex
+            dex="/Users/jakubotrzasek/AndroidStudioProjects/cbl/app/build/intermediates/pre-dexed/debug/dropbox-android-sdk-1.6.3-c12ae7fe58921f38ae4c5ae0a29b9b5bec87b95a.jar" />
     </item>
     <item
         jar="/Users/jakubotrzasek/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.0.0/support-annotations-22.0.0.jar"
