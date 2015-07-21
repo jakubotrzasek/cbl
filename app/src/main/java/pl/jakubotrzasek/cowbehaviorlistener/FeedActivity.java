@@ -11,14 +11,11 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-import pl.jakubotrzasek.cowbehaviorlistener.util.SystemUiHider;
-
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  *
- * @see SystemUiHider
  */
 public class FeedActivity extends Activity {
 

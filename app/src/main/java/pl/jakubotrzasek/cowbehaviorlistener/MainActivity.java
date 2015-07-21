@@ -30,12 +30,13 @@ public class MainActivity extends ActionBarActivity {
     private Intent i;
     private StorageHandler sh;
     private DropBoxHandler dph;
+    private EnvData envData = new EnvData();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dph = new DropBoxHandler();
+        dph = new DropBoxHandler(envData.getSettingVal("mname"));
         dph.runDropBox(this);
         sh = new StorageHandler(dph);
         i = new Intent(getApplicationContext(), FeedActivity.class);

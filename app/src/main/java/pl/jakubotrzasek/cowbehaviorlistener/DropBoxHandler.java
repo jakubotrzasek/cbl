@@ -22,12 +22,16 @@ public class DropBoxHandler {
     final static private String APP_KEY = "iwu4d3qsekold0e";
     final static private String APP_SECRET = "";
     private DropboxAPI<AndroidAuthSession> mDBApi;
+    private static String dpDir = "/cbl/";
 
 
-    public DropBoxHandler() {
+    public DropBoxHandler(String mobileName) {
         AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
         AndroidAuthSession session = new AndroidAuthSession(appKeys);
         mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+        if (mobileName != null) {
+            dpDir = dpDir + mobileName + "/";
+        }
     }
 
     public boolean runDropBox(Context c) {
@@ -48,18 +52,29 @@ public class DropBoxHandler {
         }
     }
 
-    public boolean uploadFile(String fileName) throws FileNotFoundException {
-        File file = new File(fileName);
+    public boolean uploadFile(String path, String fileName) throws FileNotFoundException {
+        File file = new File(path + fileName);
         FileInputStream inputStream = new FileInputStream(file);
+        Entry existingEntry;
+        String rev = "";
+        try {
+            existingEntry = mDBApi.metadata(dpDir + fileName, 1, null, false, null);
+            rev = existingEntry.rev;
+        } catch (Exception e) {
+            Log.e("DbExampleLog", "file not found:" + e.toString());
+        }
+
         Entry response = null;
         try {
-            response = mDBApi.putFile("/magnum-opus.txt", inputStream,
-                    file.length(), null, null);
+            if (rev.equals("")) {
+                rev = null;
+            }
+            response = mDBApi.putFile(dpDir + fileName, inputStream,
+                    file.length(), rev, null);
         } catch (DropboxException e) {
             Log.e("DROPBOX", e.toString());
             e.printStackTrace();
         }
-        Log.e("DbExampleLog", "The uploaded file's rev is: " + response.rev);
         return true;
     }
 

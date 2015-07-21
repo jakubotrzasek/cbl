@@ -33,7 +33,7 @@ public final class StorageHandler {
         try {
             File newFolder = new File(placeHolder + folderName);
             newFolder.mkdirs();
-                return true;
+            return true;
         } catch (Exception e) {
             e.toString();
             Log.e(TAG, "Couldn't create folder", e);
@@ -42,7 +42,7 @@ public final class StorageHandler {
 
     }
 
-    public static boolean appendToFile(String folderName, String fileName, String data) {
+    public boolean appendToFile(String folderName, String fileName, String data) {
         File file = new File(placeHolder + folderName, fileName);
         if (!file.exists()) {
             try {
@@ -59,6 +59,7 @@ public final class StorageHandler {
             buf.append(data);
             buf.newLine();
             buf.close();
+            dropboxUpload(placeHolder + folderName + "/", fileName);
             return true;
         } catch (Exception ee) {
             ee.toString();
@@ -71,9 +72,6 @@ public final class StorageHandler {
     public boolean appendToFile(String folderName, String data) {
         String format = "yyyy-MM-dd HH";
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.UK);
-        SimpleDateFormat minutes = new SimpleDateFormat("m", Locale.UK);
-        int i_minutes = Integer.parseInt(minutes.format(new Date()));
-
         String fileName = sdf.format(new Date()) + ".csv";
         File file = new File(placeHolder + folderName, fileName);
         if (!file.exists()) {
@@ -91,30 +89,49 @@ public final class StorageHandler {
             buf.append(data);
             buf.newLine();
             buf.close();
-            if ((i_minutes % 10 == 0 || i_minutes == 0) && saveToDPFlag == true && dropbox != null) {
-
-                try {
-
-                    saveToDPFlag = false;
-                    new UploadTask().execute(placeHolder + folderName + "/" + fileName);
-
-                } catch (Exception eee) {
-                    eee.toString();
-                    Log.e("TAG", "dp failed:" + eee.toString());
-                }
-            }
-            if (i_minutes % 10 != 0 && i_minutes != 0) {
-                saveToDPFlag = true;
-            }
-            return true;
+            dropboxUpload(placeHolder + folderName + "/", fileName);
         } catch (Exception ee) {
             ee.toString();
-            Log.e(TAG, ee.toString());
-            return false;
+            Log.e("TAG", "DiskWrite Failed:" + ee.toString());
         }
 
-
+        return true;
     }
+
+    private void dropboxPreviousUpload(String path) {
+        Date d = new Date(System.currentTimeMillis() - (1000 * 60 * 50));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH", Locale.UK);
+        String fileName = sdf.format(d) + ".csv";
+        dropboxUpload(path, fileName);
+    }
+
+    private void dropboxUpload(String path, String fileName) {
+        SimpleDateFormat minutes = new SimpleDateFormat("m", Locale.UK);
+        int i_minutes = Integer.parseInt(minutes.format(new Date()));
+        try {
+            if (i_minutes == 0 && dropbox != null) {
+                dropboxPreviousUpload(path);
+                saveToDPFlag = false;
+            }
+            if ((i_minutes % 3 == 0 && i_minutes != 0) && saveToDPFlag == true && dropbox != null) {
+                try {
+                    saveToDPFlag = false;
+                    new UploadTask().execute(path, fileName);
+
+                } catch (Exception e) {
+                    e.toString();
+                    Log.e("STORAGE", "dp failed:" + e.toString());
+                }
+            }
+            if (i_minutes % 3 != 0) {
+                saveToDPFlag = true;
+            }
+        } catch (Exception e) {
+            Log.e("STORAGE", e.toString());
+            e.toString();
+        }
+    }
+
 
     private class UploadTask extends AsyncTask {
         protected void onProgressUpdate(Integer... progress) {
@@ -130,7 +147,7 @@ public final class StorageHandler {
         protected Object doInBackground(Object[] params) {
             try {
                 saveToDPFlag = false;
-                dropbox.uploadFile(params[0].toString());
+                dropbox.uploadFile(params[0].toString(), params[1].toString());
 
             } catch (Exception e) {
 
