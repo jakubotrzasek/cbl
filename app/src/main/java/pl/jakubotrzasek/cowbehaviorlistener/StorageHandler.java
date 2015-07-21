@@ -94,7 +94,7 @@ public final class StorageHandler {
             if ((i_minutes % 10 == 0 || i_minutes == 0) && saveToDPFlag == true && dropbox != null) {
 
                 try {
-                    Log.e("TAG", "trying to send to dp");
+
                     saveToDPFlag = false;
                     new UploadTask().execute(placeHolder + folderName + "/" + fileName);
 
@@ -131,7 +131,7 @@ public final class StorageHandler {
             try {
                 saveToDPFlag = false;
                 dropbox.uploadFile(params[0].toString());
-                Log.e("TAG", "sent to dp");
+
             } catch (Exception e) {
 
                 Log.e("TAG", e.toString());
