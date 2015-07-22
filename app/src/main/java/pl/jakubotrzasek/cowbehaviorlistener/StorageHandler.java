@@ -102,18 +102,19 @@ public final class StorageHandler {
         Date d = new Date(System.currentTimeMillis() - (1000 * 60 * 50));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH", Locale.UK);
         String fileName = sdf.format(d) + ".csv";
-        dropboxUpload(path, fileName);
+        new UploadTask().execute(path, fileName);
     }
 
     private void dropboxUpload(String path, String fileName) {
         SimpleDateFormat minutes = new SimpleDateFormat("m", Locale.UK);
         int i_minutes = Integer.parseInt(minutes.format(new Date()));
         try {
-            if (i_minutes == 0 && dropbox != null) {
-                dropboxPreviousUpload(path);
+            if (i_minutes == 19 && dropbox != null && saveToDPFlag == true) {
                 saveToDPFlag = false;
+                dropboxPreviousUpload(path);
             }
             if ((i_minutes % 3 == 0 && i_minutes != 0) && saveToDPFlag == true && dropbox != null) {
+
                 try {
                     saveToDPFlag = false;
                     new UploadTask().execute(path, fileName);
