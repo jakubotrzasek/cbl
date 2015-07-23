@@ -2,6 +2,7 @@ package pl.jakubotrzasek.cowbehaviorlistener;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI;
@@ -14,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import static com.estimote.sdk.cloud.internal.ApiUtils.getSharedPreferences;
+
 /**
  * Created by jakubotrzasek on 20.07.15.
  */
@@ -22,8 +25,9 @@ public class DropBoxHandler {
     final static private String APP_KEY = "iwu4d3qsekold0e";
     final static private String APP_SECRET = "";
     private DropboxAPI<AndroidAuthSession> mDBApi;
-    private static String dpDir = "/cbl/";
-
+    private String dpDir = "/cbl/";
+    private Context context;
+    private static String dpAccessToken = "dpAccessToken";
 
     public DropBoxHandler(String mobileName) {
         AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
@@ -35,9 +39,40 @@ public class DropBoxHandler {
     }
 
     public boolean runDropBox(Context c) {
-        mDBApi.getSession().startOAuth2Authentication(c);
+        context = c;
+        String token = "";
+        SharedPreferences sp = getSharedPreferences(context);
+        token = sp.getString(dpAccessToken, null);
+        if (token != null) {
+            mDBApi.getSession().setOAuth2AccessToken(token);
+            return true;
+        } else {
+            mDBApi.getSession().startOAuth2Authentication(c);
+            return true;
+        }
+       /* if (!mDBApi.getSession().isLinked()) {
+            mDBApi.getSession().startOAuth2Authentication(c);
+        }
+
+        return true;*/
+    }
+
+    public String getToken() {
+        if (context != null) {
+            SharedPreferences sp = getSharedPreferences(context);
+            return sp.getString(dpAccessToken, null);
+        }
+        return null;
+    }
+
+    public boolean runDropBox(String token) {
+
+        if (token != null) {
+            mDBApi.getSession().setOAuth2AccessToken(token);
+        }
         return true;
     }
+
 
     public void onResume() {
 
@@ -46,6 +81,8 @@ public class DropBoxHandler {
                 mDBApi.getSession().finishAuthentication();
 
                 String accessToken = mDBApi.getSession().getOAuth2AccessToken();
+                SharedPreferences sp = getSharedPreferences(context);
+                sp.edit().putString(dpAccessToken, accessToken).apply();
             } catch (IllegalStateException e) {
                 Log.i("DbAuthLog", "Error authenticating", e);
             }

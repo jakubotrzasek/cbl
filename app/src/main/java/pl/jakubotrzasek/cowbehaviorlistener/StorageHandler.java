@@ -109,7 +109,7 @@ public final class StorageHandler {
         SimpleDateFormat minutes = new SimpleDateFormat("m", Locale.UK);
         int i_minutes = Integer.parseInt(minutes.format(new Date()));
         try {
-            if (i_minutes == 19 && dropbox != null && saveToDPFlag == true) {
+            if (i_minutes == 0 && dropbox != null && saveToDPFlag == true) {
                 saveToDPFlag = false;
                 dropboxPreviousUpload(path);
             }
