@@ -3,6 +3,7 @@ package pl.jakubotrzasek.cowbehaviorlistener;
 
 import com.estimote.sdk.Nearable;
 import com.estimote.sdk.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class NearableHandler {
             bdt.xacc = n.xAcceleration;
             bdt.yacc = n.yAcceleration;
             bdt.zacc = n.zAcceleration;
+            bdt.bateryLevel = n.batteryLevel.name();
             bdt.stateDuration = n.currentMotionStateDuration;
             ld.add(bdt);
         }

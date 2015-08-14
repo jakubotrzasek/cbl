@@ -11,18 +11,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MyActivity";
     private TextView t;
     private String scanId = "";
-    // private BeaconManager beaconManager;
     private Intent i;
     private StorageHandler sh;
     private DropBoxHandler dph;
     private EnvData envData = new EnvData();
-
     private Intent mServiceIntent;
     private BroadcastReceiver broadcastReceiver;
 
@@ -68,10 +65,14 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //dph.onResume();
+        dph.onResume();
         mServiceIntent = new Intent(getActivity(), BackGroundService.class);
         mServiceIntent.putExtra("phoneName", envData.getSettingVal("mname"));
-        mServiceIntent.putExtra("dphToken", dph.getToken());
+        if (dph.getToken() != null) {
+            mServiceIntent.putExtra("dphToken", dph.getToken());
+        } else {
+            mServiceIntent.putExtra("dphToken", dph.getSessionToken());
+        }
         getActivity().startService(mServiceIntent);
         registerBroadcastReceivers();
 
@@ -89,8 +90,6 @@ public class MainActivity extends ActionBarActivity {
         super.onStop();
         try {
             unregisterReceiver(broadcastReceiver);
-            // beaconManager.stopNearableDiscovery(scanId); // .stopBeaconDiscovery(scanId);
-            // beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
         } catch (Exception e) {
             Log.e(TAG, "Cannot stop but it does not matter now", e);
         }
@@ -99,9 +98,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // beaconManager.disconnect();
     }
-
 
     private void registerBroadcastReceivers() {
         broadcastReceiver = new BroadcastReceiver() {

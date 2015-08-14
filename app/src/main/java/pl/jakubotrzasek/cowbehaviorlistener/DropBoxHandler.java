@@ -23,11 +23,12 @@ import static com.estimote.sdk.cloud.internal.ApiUtils.getSharedPreferences;
 public class DropBoxHandler {
 
     final static private String APP_KEY = "iwu4d3qsekold0e";
-    final static private String APP_SECRET = "";
+    final static private String APP_SECRET = "iwu4d3qsekold0e";
     private DropboxAPI<AndroidAuthSession> mDBApi;
     private String dpDir = "/cbl/";
     private Context context;
     private static String dpAccessToken = "dpAccessToken";
+    private static String gToken = null;
 
     public DropBoxHandler(String mobileName) {
         AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
@@ -40,24 +41,29 @@ public class DropBoxHandler {
 
     public boolean runDropBox(Context c) {
         context = c;
-        String token = "";
+
         SharedPreferences sp = getSharedPreferences(context);
-        token = sp.getString(dpAccessToken, null);
-        if (token != null) {
-            mDBApi.getSession().setOAuth2AccessToken(token);
+        gToken = sp.getString(dpAccessToken, null);
+        if (gToken != null) {
+            mDBApi.getSession().setOAuth2AccessToken(gToken);
             return true;
         } else {
             mDBApi.getSession().startOAuth2Authentication(c);
             return true;
         }
-       /* if (!mDBApi.getSession().isLinked()) {
-            mDBApi.getSession().startOAuth2Authentication(c);
-        }
-
-        return true;*/
     }
 
+    public String getSessionToken() {
+        // gToken = mDBApi.getSession().
+        return gToken;
+    }
+
+
     public String getToken() {
+        if (gToken != null) {
+            return gToken;
+        }
+
         if (context != null) {
             SharedPreferences sp = getSharedPreferences(context);
             return sp.getString(dpAccessToken, null);
@@ -72,6 +78,7 @@ public class DropBoxHandler {
         }
         return true;
     }
+
 
 
     public void onResume() {
@@ -98,7 +105,7 @@ public class DropBoxHandler {
             existingEntry = mDBApi.metadata(dpDir + fileName, 1, null, false, null);
             rev = existingEntry.rev;
         } catch (Exception e) {
-            Log.e("DbExampleLog", "file not found:" + e.toString());
+            Log.e("DbExampleLog", "file not found:" + dpDir + fileName + e.toString());
         }
 
         Entry response = null;
@@ -109,7 +116,7 @@ public class DropBoxHandler {
             response = mDBApi.putFile(dpDir + fileName, inputStream,
                     file.length(), rev, null);
         } catch (DropboxException e) {
-            Log.e("DROPBOX", e.toString());
+            Log.e("DROPBOX_filePUT", e.toString());
             e.printStackTrace();
         }
         return true;

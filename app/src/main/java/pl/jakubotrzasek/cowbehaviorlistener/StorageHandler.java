@@ -92,7 +92,7 @@ public final class StorageHandler {
             dropboxUpload(placeHolder + folderName + "/", fileName);
         } catch (Exception ee) {
             ee.toString();
-            Log.e("TAG", "DiskWrite Failed:" + ee.toString());
+            Log.e("TAG", "DiskWrite Failed:" + ee.getStackTrace().toString());
         }
 
         return true;

@@ -8,9 +8,11 @@ import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Nearable;
 import com.estimote.sdk.Region;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
 
 /**
  * Created by jakubotrzasek on 22.07.15.
@@ -30,7 +32,6 @@ public class BackGroundService extends IntentService {
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
     private String scanId = "";
     private String TAG = "Service";
-
     public BackGroundService(String name) {
         super(name);
     }
@@ -87,9 +88,10 @@ public class BackGroundService extends IntentService {
                     String beaconData = "";
                     for (BeaconData b : bdatas) {
                         beaconData += new StringBuilder().append(":").append(b.toString()).toString();
+                        String format = "yyyy-MM-dd HH:mm:ss";
+                        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.UK);
                         sh.createFolder("cblData");
-                        sh.appendToFile("cblData", new StringBuilder().append(DateFormat.getDateTimeInstance().format(new Date())).append(";").append(b.toCSV()).toString());
-
+                        sh.appendToFile("cblData", new StringBuilder().append(sdf.format(new Date())).append(";").append(b.toCSV()).toString());
                         if (a < 3) {
                             i.putExtra("cow" + a, b.name);
                             a++;
@@ -98,7 +100,6 @@ public class BackGroundService extends IntentService {
                     }
                     textAdd(beaconData);
                 }
-                //  Log.d(TAG, "Discovered nearables: " + nearables);
 
             }
         });

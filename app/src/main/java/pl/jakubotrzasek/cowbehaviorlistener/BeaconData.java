@@ -14,6 +14,7 @@ public class BeaconData {
     public double zacc = 0.0;
     public int bpower = 0;
     public long stateDuration;
+    public String bateryLevel = "";
 
     public String toString() {
         return new StringBuilder().append("name:").append(this.name).
@@ -26,6 +27,7 @@ public class BeaconData {
                 append(",z_acceleration:").append(this.zacc).
                 append(",state_duration:").append(this.stateDuration).
                 append(",broadc.power:").append(this.bpower).
+                append("batery_level:").append(this.bateryLevel).
                 toString();
     }
 
@@ -41,6 +43,7 @@ public class BeaconData {
                 append(this.zacc).append(";").
                 append(this.stateDuration).append(";").
                 append(this.bpower).append(";").
+                append(this.bateryLevel).append(";").
                 toString();
     }
 
